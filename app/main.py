@@ -1,3 +1,6 @@
+import asyncio
+from contextlib import asynccontextmanager
+import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
@@ -6,10 +9,31 @@ from app.routers import auth, users, products, cart, wishlist
 
 Base.metadata.create_all(bind=engine)
 
+SELF_URL = "https://my-online-store-api.onrender.com/"
+
+
+async def keep_alive():
+  await asyncio.sleep(10)
+  async with httpx.AsyncClient() as client:
+    while True:
+      try:
+        await client.get(SELF_URL)
+      except Exception:
+        pass
+      await asyncio.sleep(600)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+  task = asyncio.create_task(keep_alive())
+  yield
+  task.cancel()
+
 app = FastAPI(
     title="Tech Shop API",
     description="API для интернет-магазина техники с регистрацией, корзиной, wishlist и админ-панелью",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan  # 2. Обязательно передаем lifespan сюда!
 )
 
 app.add_middleware(
