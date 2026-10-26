@@ -2,12 +2,11 @@ import requests
 
 BASE_URL = "https://my-online-store-api-1.onrender.com"
 PRODUCTS_URL = f"{BASE_URL}/products/"
-LOGIN_URL = f"{BASE_URL}/login"
+LOGIN_URL = f"{BASE_URL}/auth/login"
 
-# 1. Авторизуемся для получения свежего токена
 login_data = {
     "username": "admin",
-    "password": "admin123",  # Укажите правильный пароль администратора
+    "password": "admin123",
 }
 
 print("Получение токена авторизации...")
