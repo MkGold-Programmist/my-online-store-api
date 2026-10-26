@@ -1,7 +1,31 @@
 import requests
 
-API_URL = "https://my-online-store-api-1.onrender.com/products/"
+BASE_URL = "https://my-online-store-api-1.onrender.com"
+PRODUCTS_URL = f"{BASE_URL}/products/"
+LOGIN_URL = f"{BASE_URL}/login"
 
+# 1. Авторизуемся для получения свежего токена
+login_data = {
+    "username": "admin",
+    "password": "admin123",  # Укажите правильный пароль администратора
+}
+
+print("Получение токена авторизации...")
+auth_response = requests.post(
+    LOGIN_URL, data=login_data
+)  # или json=login_data в зависимости от вашего API
+
+if auth_response.status_code != 200:
+    print(
+        f"Ошибка авторизации: {auth_response.status_code}, {auth_response.text}"
+    )
+    exit()
+
+token = auth_response.json().get("access_token")
+headers = {"Authorization": f"Bearer {token}"}
+print("Токен успешно получен!")
+
+# 2. Список товаров для отправки
 products = [
     {
         "title": "Mechanical Keyboard Attack Shark R85HE",
@@ -16,7 +40,6 @@ products = [
         "is_on_sale": True,
         "discount_percentage": 18,
         "is_active": True,
-        "id": 0
     },
     {
         "title": "Wireless Gaming Mouse ATK Dragonfly A9 Pro",
@@ -31,7 +54,6 @@ products = [
         "is_on_sale": True,
         "discount_percentage": 12,
         "is_active": True,
-        "id": 0
     },
     {
         "title": "Machenike TH66 TWS Earbuds",
@@ -46,7 +68,6 @@ products = [
         "is_on_sale": True,
         "discount_percentage": 18,
         "is_active": True,
-        "id": 0
     },
     {
         "title": "Fast IPS 27 Gaming Monitor 1440p",
@@ -61,13 +82,10 @@ products = [
         "is_on_sale": False,
         "discount_percentage": 0,
         "is_active": True,
-        "id": 0
-    }
+    },
 ]
 
-# Если для создания товаров требуется авторизация (токен), укажите его ниже в заголовках:
-headers = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc5MjE3MDg4NH0.XZAf9gKUH0hxOxQA0-nbmfN8Pu-JnIHGXokzVCeaaKg"}
-
+# 3. Отправка продуктов
 for item in products:
-    response = requests.post(API_URL, json=item, headers=headers)
-    print(f"Status: {response.status_code}, Response: {response.text}")
+    response = requests.post(PRODUCTS_URL, json=item, headers=headers)
+    print(f"Статус: {response.status_code}, Ответ: {response.text}")
