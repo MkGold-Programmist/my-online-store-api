@@ -1,6 +1,6 @@
 import requests
 
-API_URL = "https://my-online-store-api.onrender.com/products/"
+API_URL = "https://my-online-store-api-1.onrender.com/products/"
 
 products = [
     {
